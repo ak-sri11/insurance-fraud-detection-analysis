@@ -28,7 +28,7 @@ The objective was to simulate a real-world fraud detection workflow by combining
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 insurance-fraud-detection-analysis/
@@ -141,4 +141,4 @@ This project demonstrates how combining **data analysis, business rules, and rea
 
 ## Author
 Akshaya V.S.  
-📅 2026
+📅 Mar 2026
