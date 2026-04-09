@@ -77,6 +77,13 @@ Developed rule-based indicators:
 - Frequent Claims  
 - Suspicious Patterns  
 
+### Fraud Signals Explained
+
+- Reporting Delay: Late claim reporting can indicate intentional delay to manipulate claim conditions  
+- Claim-to-IDV Ratio: Claims close to the insured value suggest possible over-claiming or fraud attempts  
+- Vehicle Age: Older vehicles are more prone to inflated or suspicious claims due to lower actual value  
+- Claim Frequency: Multiple claims from the same customer indicate abnormal behavior patterns
+
 These signals were combined into:
 
 ### Fraud Score
