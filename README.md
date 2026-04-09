@@ -54,6 +54,12 @@ insurance-fraud-detection-analysis/
 - Handled missing values and inconsistencies  
 - Created structured dataset for analysis  
 
+## Workflow Integration
+
+- Input: Raw claims dataset with customer, claim, and vehicle details  
+- Processing: Data cleaning, feature engineering, and fraud scoring using SQL and Python  
+- Output: Risk-segmented claims and prioritized high-risk cases for investigation
+
 ### Feature Engineering
 - **Reporting Lag** → Delay between incident and claim  
 - **Claim Ratio** → Claim Amount vs IDV  
