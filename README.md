@@ -1,10 +1,10 @@
-# Insurance Claims Fraud Detection & Risk Analysis
-This project simulates a real-world fraud investigation workflow used by risk analytics teams.
+# Fraud Risk Scoring & Investigation Prioritization System
+End-to-end fraud risk scoring system simulating real-world investigation workflows used by risk analytics teams.
 
 ## Project Overview
-This project focuses on detecting potential fraud in insurance claims using a combination of **Python-based analysis** and **SQL-driven business logic**.
+This project focuses on identifying high-risk insurance claims using a combination of Python-based analysis and SQL-driven business logic.
 
-The objective was to simulate a real-world fraud detection workflow by combining behavioral indicators, financial signals, and risk segmentation to identify suspicious claims efficiently.
+The objective was to simulate a real-world fraud risk scoring and investigation workflow by combining behavioral indicators, financial signals, and risk segmentation to identify suspicious claims efficiently.
 
 ---
 
