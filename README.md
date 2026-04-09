@@ -1,4 +1,5 @@
 # Insurance Claims Fraud Detection & Risk Analysis
+This project simulates a real-world fraud investigation workflow used by risk analytics teams.
 
 ## Project Overview
 This project focuses on detecting potential fraud in insurance claims using a combination of **Python-based analysis** and **SQL-driven business logic**.
