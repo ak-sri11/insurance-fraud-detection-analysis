@@ -118,7 +118,7 @@ To mimic real-world complexity:
 
 ## Business Impact
 
-- Reduced investigation scope to a small high-risk segment  
+- Reduced investigation scope to a focused ~3% high-risk segment, minimizing manual review effort
 - Enabled targeted fraud detection instead of manual review  
 - Highlighted key fraud drivers for decision-making  
 - Improved efficiency in prioritizing suspicious claims  
