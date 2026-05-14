@@ -44,7 +44,7 @@ df['Claim_Cause'] = df['Claim_Cause'].fillna('Unknown')
 
 df = df.dropna(subset=['Loss_Date', 'Intimation_Date'])
 
-# Create Reporting Lag (important feature)
+# Create Reporting Lag
 df['Reporting_Lag'] = (df['Intimation_Date'] - df['Loss_Date']).dt.days
 
 # %% [markdown]
@@ -124,16 +124,24 @@ df['Total_Loss_Flag'] = (
 # -------------------------------
 # Identify suspicious garages with unusually high claim volume
 
-garage_counts = df.groupby('Garage_ID')['Claim_Number'].count()
-df['High_Garage_Claims'] = df['Garage_ID'].map(garage_counts) > 30
+garage_claim_pattern = (
+    df.groupby(['Garage_ID', 'Claim_Cause'])['Claim_Number']
+    .count()
+)
 
+df['Garage_Claim_Pattern_Count'] = list(
+    zip(df['Garage_ID'], df['Claim_Cause'])
+)
 
-# -------------------------------
-# 3.9 Cluster Fraud Flag
-# -------------------------------
-# Cluster-based fraud: if garage shows abnormal claim volume, all associated claims are risky
+df['Garage_Claim_Pattern_Count'] = (
+    df['Garage_Claim_Pattern_Count']
+    .map(garage_claim_pattern)
+)
 
-df['Cluster_Fraud_Flag'] = df['High_Garage_Claims']
+df['Cluster_Fraud_Flag'] = (
+    df['Garage_Claim_Pattern_Count'] > 15
+)
+
 
 # %% [markdown]
 # ### 4. Fraud Logic
