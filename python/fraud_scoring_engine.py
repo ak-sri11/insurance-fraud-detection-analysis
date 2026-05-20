@@ -34,8 +34,17 @@ df.head()
 # %%
 df.isnull().sum()
 
-df['Loss_Date'] = pd.to_datetime(df['Loss_Date'])
-df['Intimation_Date'] = pd.to_datetime(df['Intimation_Date'])
+# %%
+
+df['Loss_Date'] = pd.to_datetime(
+    df['Loss_Date'],
+    dayfirst=True
+)
+
+df['Intimation_Date'] = pd.to_datetime(
+    df['Intimation_Date'],
+    dayfirst=True
+)
 
 
 df['Claim_Amount'] = df['Claim_Amount'].fillna(df['Claim_Amount'].median())
@@ -129,13 +138,12 @@ garage_claim_pattern = (
     .count()
 )
 
-df['Garage_Claim_Pattern_Count'] = list(
-    zip(df['Garage_ID'], df['Claim_Cause'])
-)
-
-df['Garage_Claim_Pattern_Count'] = (
-    df['Garage_Claim_Pattern_Count']
-    .map(garage_claim_pattern)
+df['Garage_Claim_Pattern_Count'] = df.apply(
+    lambda row: garage_claim_pattern.get(
+        (row['Garage_ID'], row['Claim_Cause']),
+        0
+    ),
+    axis=1
 )
 
 df['Cluster_Fraud_Flag'] = (
@@ -190,7 +198,10 @@ np.random.seed(42)
 
 noise_ratio = 0.05
 
-noise_indices = df.sample(frac=noise_ratio).index
+noise_indices = df.sample(
+    frac=noise_ratio,
+    random_state=42
+).index
 
 # Introduce label uncertainty to mimic imperfect fraud detection environments
 df.loc[noise_indices, 'Final_Fraud_Flag'] = ~df.loc[noise_indices, 'Final_Fraud_Flag']
@@ -249,46 +260,7 @@ plt.show()
 # Such extreme claims are potential fraud indicators, as unusually high payouts may involve exaggerated or suspicious claims requiring deeper investigation.  
 
 # %% [markdown]
-# ***Chart 2: Comparitive Analysis of Claim Amount Distribution Between Fraudulent and Non-Fraudulent Claims***
-# 
-# **Goal:** To compare the distribution of claim amounts between fraudulent and non-fraudulent claims and identify whether claim amount can act as a distinguishing factor for fraud detection.
-# 
-# **Chart Type:** KDE Plot (Kernel Density Estimation)
-# 
-
-# %%
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# %%
-plt.figure(figsize=(12,6))
-
-sns.kdeplot(fraud_df['Claim_Amount'], label='Fraud', fill=True)
-sns.kdeplot(non_fraud_df['Claim_Amount'], label='Non-Fraud', fill=True)
-
-plt.title('Fraud vs Non-Fraud Claim Amount Distribution', fontsize=14)
-plt.xlabel('Claim Amount', fontsize=12)
-plt.ylabel('Density', fontsize=12)
-
-plt.legend()
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-import matplotlib.ticker as mticker
-
-plt.gca().xaxis.set_major_formatter(
-    mticker.FuncFormatter(lambda x, p: f'₹{x/100000:.0f}L')
-)
-
-plt.gca().yaxis.set_major_formatter(
-    mticker.FuncFormatter(lambda y, _: f'{y:.6f}')
-)
-plt.tight_layout()
-plt.show()
-
-# %% [markdown]
-# **Insight:** Fraud and non-fraud claim distributions show significant overlap, indicating that claim amount alone is not a strong standalone indicator of fraud. However, fraudulent claims exhibit a slightly heavier tail toward higher values, suggesting that unusually large claims are more likely to be associated with fraud risk, but not exclusively.
-
-# %% [markdown]
-# ***Chart 3: Claim Amount Distribution by Fraud Status***
+# ***Chart 2: Claim Amount Distribution by Fraud Status***
 # 
 # ***Goal:*** To compare the spread, median, and outlier behavior of claim amounts between fraud and non-fraud cases.
 # 
@@ -349,7 +321,7 @@ plt.show()
 # **Insight:** Fraud cases exhibit a wider distribution and a higher concentration of extreme outliers compared to non-fraud cases. While median claim amounts remain comparable, fraudulent claims extend more frequently into higher ranges (₹7L+), indicating that unusually large claim values are a strong indicator of potential fraud risk.
 
 # %% [markdown]
-# ***Chart 4: Correlation Analysis of Key Features Influencing Fraud Risk***
+# ***Chart 3: Correlation Analysis of Key Features Influencing Fraud Risk***
 # 
 # **Goal:** Identify relationships between numerical features and detect which variables are strongly associated with fraud behavior.
 # 
@@ -389,7 +361,7 @@ plt.show()
 # **Insight:** Claim Amount and Claim Percentage show a moderate positive correlation, indicating higher claim values tend to represent a larger proportion of insured value. Vehicle Age shows a negative correlation with Claim Amount, suggesting older vehicles tend to have lower claim values. Fraud Score exhibits moderate relationships with multiple features, reinforcing that fraud detection is driven by a combination of factors rather than a single variable.
 
 # %% [markdown]
-# ***Chart 5: Fraud Risk Segmentation: Distribution of Claims Across Risk Levels***
+# ***Chart 4: Fraud Risk Segmentation: Distribution of Claims Across Risk Levels***
 # 
 # **Goal:** Segment claims into Low, Medium, and High risk categories based on fraud score to identify where fraud is concentrated.
 # 
@@ -399,11 +371,12 @@ plt.show()
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Risk Segmentation: Categorize claims based on fraud score intensity
-df['Risk_Level'] = pd.qcut(
-    df['Fraud_Score'],
-    q=3,
-    labels=['Low Risk', 'Medium Risk', 'High Risk']
+# Risk Segmentation using fixed operational thresholds
+df['Risk_Level'] = df['Fraud_Score'].apply(
+    lambda x: (
+        'High Risk' if x >= 3
+        else ('Medium Risk' if x == 2 else 'Low Risk')
+    )
 )
 
 # Fraud Rate Analysis: Measure percentage of fraudulent claims within each risk segment
@@ -433,7 +406,7 @@ plt.show()
 # **Insight:** Fraud rates increase significantly across risk segments, with high-risk claims showing a substantially higher likelihood of fraud compared to low-risk claims. However, the presence of fraud in lower-risk segments indicates that risk scoring is probabilistic rather than definitive, reflecting real-world uncertainty.
 
 # %% [markdown]
-# ***Chart 6: Fraud Indicator Concentration Analysis***
+# ***Chart 5: Fraud Indicator Concentration Analysis***
 # 
 # **Goal:** To identify which fraud indicators are triggered most frequently and understand dominant operational fraud patterns across claims.
 # 
@@ -487,7 +460,7 @@ plt.show()
 # **Insight:** Late reporting and repeated claim activity emerged as the most frequently triggered fraud indicators, suggesting that suspicious behavioral patterns occur more consistently than extreme loss events. Operationally, this indicates that fraud detection systems should prioritize behavioral monitoring alongside financial severity checks.
 
 # %% [markdown]
-# ***Chart 7: Fraud Score Distribution Across Final Fraud Outcomes***
+# ***Chart 6: Fraud Score Distribution Across Final Fraud Outcomes***
 # 
 # **Goal:** To evaluate how effectively the rule-based fraud scoring system separates fraudulent and non-fraudulent claims based on score distribution patterns.
 # 
@@ -540,7 +513,7 @@ plt.show()
 # ***Insight:*** Fraudulent claims exhibit consistently higher fraud scores compared to non-fraudulent claims, validating the effectiveness of the multi-factor fraud scoring framework. While some overlap exists due to controlled noise injection and real-world uncertainty simulation, higher fraud scores remain strongly associated with elevated fraud risk.
 
 # %% [markdown]
-# ***Chart 8: Fraud Logic Co-Occurrence Analysis***
+# ***Chart 7: Fraud Logic Co-Occurrence Analysis***
 # 
 # **Goal:** To identify which fraud indicators commonly occur together and uncover compound behavioral fraud patterns across suspicious claims.
 # 
